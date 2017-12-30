@@ -2,7 +2,7 @@ import * as React from 'React';
 
 import { Card, Faction } from './card';
 
-interface BoardProps {
+export interface BoardProps {
   words: string[][]
 }
 export class Board extends React.Component<BoardProps, {}> {

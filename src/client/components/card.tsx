@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-enum Faction {
+export enum Faction {
   Unknown,
   Blue,
   Red,
@@ -8,7 +8,7 @@ enum Faction {
   Assassin,
 };
 
-interface CardProps {
+export interface CardProps {
   word: string;
   faction: Faction;
 }

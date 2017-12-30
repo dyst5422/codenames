@@ -1,0 +1,74 @@
+enum Stage {
+	RED_HINT
+	BLUE_HINT
+	RED_REVEAL
+	BLUE_REVEAL
+	RED_WON
+	BLUE_WON
+}
+
+enum Faction {
+	RED
+	BLUE
+	ASSASSIN
+	BYSTANDER
+}
+
+type User {
+	id: String!
+	name: String!
+}
+
+type Team {
+	id: String!
+	players: [User!]!
+	playerIds: [String!]!
+	spymaster: User
+	spymasterId: String
+	addPlayer(playerId: String): Team
+	promoteToSpymaster(playerId: String): Team
+}
+
+type Card {
+	word: String!
+	faction: Faction!
+	revealed: Boolean!
+}
+
+type Hint {
+	word: String
+	numCards: Int
+}
+
+type Game {
+	id: String!
+	redTeam: Team
+	redTeamId: String!
+	blueTeam: Team
+	blueTeamId: String!
+	stage: Stage
+	cards: [Card!]!
+	lastHint: Hint
+	reveal(word: String!): Card
+	hint(word: String!, numCards: Int!): Hint
+}
+
+type Queries {
+	user(id: String, name: String): User
+	allUsers: [User!]!
+	team(id: String!): Team
+	allTeams: [Team!]!
+	game(id: String!): Game
+	allGames: [Game!]!
+}
+
+type Mutations {
+	createUser(name: String!): User
+	createTeam: Team
+	createGame(redTeamId: String!, blueTeamId: String!): Game
+}
+
+schema {
+	query: Queries
+	mutation: Mutations
+}
