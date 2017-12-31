@@ -1,24 +1,38 @@
-import * as Mongo from 'mongodb';
 import { ObjectId } from 'bson';
+import * as Mongo from 'mongodb';
 import { assertOne } from '../../utils/assertions';
 import { Model } from './Model';
 
-
-
 export interface TeamProps {
-	operativeIds: string[],
-	spymasterId: string | undefined,
+  operativeIds: string[];
+  spymasterId: string | undefined;
 }
 
 export class Team extends Model<TeamProps> {
-	public defaultProps = {
-		operativeIds: [],
-		spymasterId: undefined,
-	}
+  public async addOperative(operativeId: string) {
+    await this._collection.updateOne({ _id: new ObjectId(this.id) }, { $addToSet: { 'props.operativeIds': operativeId } });
+    return await this.syncProperties();
+  }
 
-	public async addOperative(operativeId: string) {
-		await this._collection.updateOne({ _id: this.id }, { $addToSet: { operativeIds: operativeId }});
-		return await this.syncProperties();
-	}
+  public async promoteToSpymaster(spymasterId: string) {
+    await this._collection.updateOne(
+      { _id: new ObjectId(this.id) },
+      {
+        $pull: { 'props.operativeIds': spymasterId },
+        $set: { 'props.spymasterId': spymasterId },
+      },
+    );
+
+    return await this.syncProperties();
+  }
+
+  public static async createTeam(config: { id: string } | Partial<TeamProps>, mongoCollection: Mongo.Collection) {
+    const that = new Team();
+
+    return await Model.createModel<TeamProps>(that, {
+      operativeIds: [],
+      spymasterId: undefined,
+      ...config,
+    }, mongoCollection);
+  }
 }
-

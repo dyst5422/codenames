@@ -21,12 +21,12 @@ type User {
 
 type Team {
 	id: String!
-	players: [User!]!
-	playerIds: [String!]!
+	operatives: [User!]!
+	operativeIds: [String!]!
 	spymaster: User
 	spymasterId: String
-	addPlayer(playerId: String): Team
-	promoteToSpymaster(playerId: String): Team
+	addOperative(operativeId: String): Team
+	promoteToSpymaster(spymasterId: String): Team
 }
 
 type Card {
@@ -54,18 +54,18 @@ type Game {
 }
 
 type Queries {
-	user(id: String, name: String): User
+	user(userId: String, name: String): User
 	allUsers: [User!]!
-	team(id: String!): Team
+	team(teamId: String!): Team
 	allTeams: [Team!]!
-	game(id: String!): Game
+	game(gameId: String!): Game
 	allGames: [Game!]!
 }
 
 type Mutations {
 	createUser(name: String!): User
 	createTeam: Team
-	createGame(redTeamId: String!, blueTeamId: String!): Game
+	createGame(redId: String!, blueId: String!): Game
 }
 
 schema {
