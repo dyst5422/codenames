@@ -16,14 +16,14 @@ export function createResolvers(db: Mongo.Db) {
         (await usersCollection.find({}, { _id: 1 }).toArray()).map(user =>
           User.createUser({ id: user._id.toHexString() }, usersCollection),
         ),
-      team: async (_: undefined, args: { userId: string }) =>
-        await Team.createTeam({ id: args.userId }, teamsCollection),
+      team: async (_: undefined, args: { teamId: string }) =>
+        await Team.createTeam({ id: args.teamId }, teamsCollection),
       allTeams: async () =>
         (await teamsCollection.find({}, { _id: 1 }).toArray()).map(team =>
           Team.createTeam({ id: team._id.toHexString() }, teamsCollection),
         ),
-      game: async (_: undefined, args: { userId: string }) =>
-        await Game.createGame({ id: args.userId }, gamesCollection),
+      game: async (_: undefined, args: { gameId: string }) =>
+        await Game.createGame({ id: args.gameId }, gamesCollection),
       allGames: async () =>
         (await gamesCollection.find({}, { _id: 1 }).toArray()).map(game =>
           Game.createGame({ id: game._id.toHexString() }, gamesCollection),
