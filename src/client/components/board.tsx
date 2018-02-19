@@ -3,7 +3,7 @@ import * as React from 'React';
 import { Card, Faction } from './card';
 
 export interface BoardProps {
-  words: string[][]
+  words: string[][];
 }
 export class Board extends React.Component<BoardProps, {}> {
   public render () {

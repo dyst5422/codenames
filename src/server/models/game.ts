@@ -1,7 +1,8 @@
 import { ObjectId } from 'bson';
+import { PubSub } from 'graphql-subscriptions/dist/pubsub';
 import { shuffle } from 'lodash';
 import * as Mongo from 'mongodb';
-import { assertOne } from '../../utils/assertions';
+import { assertDefined, assertOne } from '../../utils/assertions';
 import { nouns } from '../nouns';
 import { Model } from './Model';
 
@@ -27,15 +28,17 @@ export interface Card {
   revealed: boolean;
 }
 
+export interface Hint {
+  word: string;
+  numCards: number;
+}
+
 export interface GameProps {
   redId: string;
   blueId: string;
   stage: Stage;
   cards: Card[];
-  lastHint: {
-    word: string;
-    numCards: number;
-  } | undefined;
+  lastHint: Hint | undefined;
 }
 
 const NUM_CARDS = 25;
@@ -45,7 +48,7 @@ const numSecond = thirdOfCards;
 const numLeft = thirdOfCards - 1;
 
 export class Game extends Model<GameProps> {
-  public async reveal(word: string, faction: Faction) {
+  public async reveal(word: string, faction: Faction): Promise<Card> {
     await this.syncProperties();
     if (!(
       (this.props.stage === Stage.BLUE_REVEAL && faction === Faction.BLUE)
@@ -64,8 +67,8 @@ export class Game extends Model<GameProps> {
       '_id': new ObjectId(this.id),
       'props.cards.word': word,
     }, {
-      $set: { 'props.cards.$.revealed': true }
-    });
+        $set: { 'props.cards.$.revealed': true }
+      });
 
     if (revealedCard.faction === Faction.ASSASSIN) {
       await this._transitionStage(faction === Faction.RED ? Faction.BLUE : Faction.RED);
@@ -80,11 +83,11 @@ export class Game extends Model<GameProps> {
     }
 
     await this.syncProperties();
-
     return assertOne(this.props.cards.filter(card => card.word === word));
   }
 
-  public async hint(word: string, numCards: number, faction: Faction) {
+  public async hint(word: string, numCards: number, faction: Faction): Promise<Hint> {
+    await this.syncProperties();
     if (!(
       (this.props.stage === Stage.BLUE_HINT && faction === Faction.BLUE)
       ||
@@ -96,19 +99,19 @@ export class Game extends Model<GameProps> {
     await this._collection.updateOne({
       _id: new ObjectId(this.id),
     }, {
-      $set: {
-        'props.lastHint': {
-          word,
-          numCard: numCards,
+        $set: {
+          'props.lastHint': {
+            word,
+            numCards,
+          },
         },
-      },
-    });
-
+      });
+    await this._transitionStage();
     await this.syncProperties();
-    return this.props.lastHint;
+    return assertDefined(this.props.lastHint);
   }
 
-  private async _transitionStage(winner?: Faction.BLUE | Faction.RED) {
+  private async _transitionStage(winner?: Faction.BLUE | Faction.RED): Promise<Stage> {
     let newStage: Stage;
     if (winner != undefined) {
       if (winner === Faction.RED) {
@@ -141,25 +144,33 @@ export class Game extends Model<GameProps> {
     await this._collection.updateOne({
       _id: new ObjectId(this.id),
     }, {
-      $set: { 'props.stage': newStage },
-    });
+        $set: { 'props.stage': newStage },
+      });
+    return newStage;
   }
 
-  public static async createGame(config: { id: string } | { redId: string, blueId: string }, mongoCollection: Mongo.Collection) {
+  public static async createGame(
+    config: { id: string } | { redId: string, blueId: string },
+    mongoCollection: Mongo.Collection,
+  ) {
     const that = new Game();
-    return await Model.createModel<GameProps>(that, {
-      stage: Stage.RED_HINT,
-      cards: shuffle(shuffle(nouns).slice(0, NUM_CARDS).map((word, idx) => ({
+    return await Model.createModel<GameProps>(
+      that,
+      {
+        stage: Stage.RED_HINT,
+        cards: shuffle(shuffle(nouns).slice(0, NUM_CARDS).map((word, idx) => ({
           word,
           faction:
             idx < thirdOfCards + 1 ? Faction.RED :
-            idx < 2 * thirdOfCards ? Faction.BLUE :
-            idx === 2 * thirdOfCards ? Faction.ASSASSIN :
-            Faction.BYSTANDER,
+              idx < 2 * thirdOfCards ? Faction.BLUE :
+                idx === 2 * thirdOfCards ? Faction.ASSASSIN :
+                  Faction.BYSTANDER,
           revealed: false,
         }))),
-      lastHint: undefined,
-      ...config,
-    }, mongoCollection);
+        lastHint: undefined,
+        ...config,
+      },
+      mongoCollection,
+    );
   }
 }

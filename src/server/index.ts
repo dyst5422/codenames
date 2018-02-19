@@ -16,18 +16,18 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { assertOne } from '../utils/assertions';
 import { nouns } from './nouns';
 import { createResolvers } from './resolvers';
+import { userInfo } from 'os';
 
 async function main() {
   const mongoClient = await MongoClient.connect('mongodb://localhost:27017');
   const typeDef = (await fs.readFile(path.join(__dirname, 'schema.graphql'))).toString();
   const db = mongoClient.db('codenames');
 
-
   const resolvers = createResolvers(db);
   const schema = makeExecutableSchema({
-    resolvers,
+    resolvers: [resolvers],
     typeDefs: [typeDef],
-  });
+  } as any);
 
   const server = createServer();
   const expressRouter = express();
@@ -63,7 +63,7 @@ async function main() {
     },
     {
       server,
-      path: 'graphql-subscriptions',
+      path: '/graphql-subscriptions',
     },
   );
   expressRouter.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));

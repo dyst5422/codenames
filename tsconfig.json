@@ -4,13 +4,16 @@
       "sourceMap": true,
       "strict": true,
       "strictFunctionTypes": false,
+      "strictPropertyInitialization": false,
       "declaration": true,
       "module": "commonjs",
       "target": "es5",
       "jsx": "react",
+      "allowJs": false,
       "lib": [
           "es2015",
           "es2016",
+          "esnext",
           "dom"
       ]
   },

@@ -31,7 +31,7 @@ type Team {
 
 type Card {
 	word: String!
-	faction: Faction!
+	faction: Faction
 	revealed: Boolean!
 }
 
@@ -49,8 +49,9 @@ type Game {
 	stage: Stage
 	cards: [Card!]!
 	lastHint: Hint
-	reveal(word: String!): Card
-	hint(word: String!, numCards: Int!): Hint
+	## These are methods that mutate, so they return the game object which can then be resolved to the new state
+	reveal(word: String!): Game
+	hint(word: String!, numCards: Int!): Game
 }
 
 type Queries {
@@ -68,7 +69,13 @@ type Mutations {
 	createGame(redId: String!, blueId: String!): Game
 }
 
+type Subscriptions {
+	gameCards(gameId: String!): Card!
+	gameHints(gameId: String!): Hint!
+}
+
 schema {
 	query: Queries
 	mutation: Mutations
+	subscription: Subscriptions
 }

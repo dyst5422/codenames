@@ -6,7 +6,7 @@ export enum Faction {
   Red,
   Neutral,
   Assassin,
-};
+}
 
 export interface CardProps {
   word: string;
@@ -37,7 +37,7 @@ export class Card extends React.Component<CardProps, {}> {
         return { backgroundColor: 'Beige' };
       }
       case Faction.Assassin: {
-        return { backgroundColor: 'Black', color: 'White' }
+        return { backgroundColor: 'Black', color: 'White' };
       }
       default: {
         return {};

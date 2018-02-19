@@ -1,4 +1,5 @@
 import { ObjectId } from 'bson';
+import { PubSub } from 'graphql-subscriptions/dist/pubsub';
 import * as Mongo from 'mongodb';
 import { assertOne } from '../../utils/assertions';
 import { Model } from './Model';
@@ -29,10 +30,14 @@ export class Team extends Model<TeamProps> {
   public static async createTeam(config: { id: string } | Partial<TeamProps>, mongoCollection: Mongo.Collection) {
     const that = new Team();
 
-    return await Model.createModel<TeamProps>(that, {
-      operativeIds: [],
-      spymasterId: undefined,
-      ...config,
-    }, mongoCollection);
+    return await Model.createModel<TeamProps>(
+      that,
+      {
+        operativeIds: [],
+        spymasterId: undefined,
+        ...config,
+      },
+      mongoCollection,
+    );
   }
 }

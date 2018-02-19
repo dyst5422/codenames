@@ -1,4 +1,3 @@
-
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloClient } from 'apollo-client';
 import { split } from 'apollo-link';
@@ -7,9 +6,6 @@ import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { OperationDefinitionNode } from 'graphql';
 import gql from 'graphql-tag';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { App } from './components/app';
 
 // Create an http link:
 const httpLink = new HttpLink({
@@ -49,27 +45,11 @@ const client = new ApolloClient({
 client.subscribe({
   query: gql`
     subscription {
-      gameHints(gameId: "5a8b4cec965db7dc4b3be246") {
+      gameHints(gameId: "5a4842a943ceb73a035a662b") {
         word
         numCards
       }
     }
   `,
-}).subscribe(thing => console.log(thing));
+});
 
-client.subscribe({
-  query: gql`
-    subscription {
-      gameCards(gameId: "5a8b4cec965db7dc4b3be246") {
-        word
-        faction
-        revealed
-      }
-    }
-  `,
-}).subscribe(thing => console.log(thing));
-
-ReactDOM.render(
-    <App />,
-    document.getElementById('mount')
-);

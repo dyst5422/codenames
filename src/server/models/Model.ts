@@ -1,7 +1,9 @@
 import { ObjectId } from 'bson';
+import { PubSub } from 'graphql-subscriptions';
 import * as Mongo from 'mongodb';
 import { assertOne } from '../../utils/assertions';
 
+// tslint:disable-next-line:no-any
 function hasId(thing: any): thing is { id: string } {
   return typeof thing.id === 'string';
 }

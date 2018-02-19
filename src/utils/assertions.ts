@@ -4,3 +4,10 @@ export function assertOne<T>(array: T[]): T {
   }
   return array[0];
 }
+
+export function assertDefined<T>(obj: T | undefined): T {
+  if (obj == undefined) {
+    throw new Error('Expected object to be defined, but object was undefined.');
+  }
+  return obj;
+}
