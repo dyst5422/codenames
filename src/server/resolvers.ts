@@ -13,20 +13,17 @@ export function createResolvers(db: Mongo.Db) {
   const gamesCollection = db.collection('games');
   return {
     Queries: {
-      user: async (_: undefined, args: { userId: string }) =>
-        User.createUser({ id: args.userId }, usersCollection),
+      user: async (_: undefined, args: { userId: string }) => User.createUser({ id: args.userId }, usersCollection),
       allUsers: async () =>
         (await usersCollection.find({}, { projection: { _id: 1 } }).toArray()).map(user =>
           User.createUser({ id: user._id.toHexString() }, usersCollection),
         ),
-      team: async (_: undefined, args: { teamId: string }) =>
-        Team.createTeam({ id: args.teamId }, teamsCollection),
+      team: async (_: undefined, args: { teamId: string }) => Team.createTeam({ id: args.teamId }, teamsCollection),
       allTeams: async () =>
         (await teamsCollection.find({}, { projection: { _id: 1 } }).toArray()).map(team =>
           Team.createTeam({ id: team._id.toHexString() }, teamsCollection),
         ),
-      game: async (_: undefined, args: { gameId: string }) =>
-        Game.createGame({ id: args.gameId }, gamesCollection),
+      game: async (_: undefined, args: { gameId: string }) => Game.createGame({ id: args.gameId }, gamesCollection),
       allGames: async () =>
         (await gamesCollection.find({}, { projection: { _id: 1 } }).toArray()).map(game =>
           Game.createGame({ id: game._id.toHexString() }, gamesCollection),
@@ -60,10 +57,8 @@ export function createResolvers(db: Mongo.Db) {
         teamObj.props.spymasterId
           ? await User.createUser({ id: teamObj.props.spymasterId }, usersCollection)
           : undefined,
-      addOperative: async (teamObj: Team, args: { operativeId: string }) =>
-        teamObj.addOperative(args.operativeId),
-      promoteToSpymaster: async (teamObj: Team, args: { spymasterId: string }) =>
-        teamObj.promoteToSpymaster(args.spymasterId),
+      addOperative: async (teamObj: Team, args: { operativeId: string }) => teamObj.addOperative(args.operativeId),
+      promoteToSpymaster: async (teamObj: Team, args: { spymasterId: string }) => teamObj.promoteToSpymaster(args.spymasterId),
     },
     Game: {
       redTeamId: (gameObj: Game) => gameObj.props.redId,
@@ -119,7 +114,3 @@ export function createResolvers(db: Mongo.Db) {
     },
   };
 }
-
-
-pubsub.subscribe('5a4842a943ceb73a035a662b.hints', dat => console.log('hints', dat));
-pubsub.subscribe('5a4842a943ceb73a035a662b.cards', dat => console.log('cards', dat));

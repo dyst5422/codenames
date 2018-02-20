@@ -12,7 +12,7 @@ export interface TeamProps {
 export class Team extends Model<TeamProps> {
   public async addOperative(operativeId: string) {
     await this._collection.updateOne({ _id: new ObjectId(this.id) }, { $addToSet: { 'props.operativeIds': operativeId } });
-    return await this.syncProperties();
+    return await this.syncPropsFromDb();
   }
 
   public async promoteToSpymaster(spymasterId: string) {
@@ -24,7 +24,7 @@ export class Team extends Model<TeamProps> {
       },
     );
 
-    return await this.syncProperties();
+    return await this.syncPropsFromDb();
   }
 
   public static async createTeam(config: { id: string } | Partial<TeamProps>, mongoCollection: Mongo.Collection) {

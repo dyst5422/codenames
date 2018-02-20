@@ -49,7 +49,7 @@ const numLeft = thirdOfCards - 1;
 
 export class Game extends Model<GameProps> {
   public async reveal(word: string, faction: Faction): Promise<Card> {
-    await this.syncProperties();
+    await this.syncPropsFromDb();
     if (!(
       (this.props.stage === Stage.BLUE_REVEAL && faction === Faction.BLUE)
       ||
@@ -82,12 +82,12 @@ export class Game extends Model<GameProps> {
       await this._transitionStage(Faction.BLUE);
     }
 
-    await this.syncProperties();
+    await this.syncPropsFromDb();
     return assertOne(this.props.cards.filter(card => card.word === word));
   }
 
   public async hint(word: string, numCards: number, faction: Faction): Promise<Hint> {
-    await this.syncProperties();
+    await this.syncPropsFromDb();
     if (!(
       (this.props.stage === Stage.BLUE_HINT && faction === Faction.BLUE)
       ||
@@ -107,7 +107,7 @@ export class Game extends Model<GameProps> {
         },
       });
     await this._transitionStage();
-    await this.syncProperties();
+    await this.syncPropsFromDb();
     return assertDefined(this.props.lastHint);
   }
 

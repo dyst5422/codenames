@@ -8,6 +8,7 @@ import { getMainDefinition } from 'apollo-utilities';
 import { OperationDefinitionNode } from 'graphql';
 import gql from 'graphql-tag';
 import * as React from 'react';
+import { ApolloProvider } from 'react-apollo';
 import * as ReactDOM from 'react-dom';
 import { App } from './components/app';
 
@@ -29,10 +30,10 @@ const wsLink = new WebSocketLink({
   webSocketImpl: WebSocket,
 });
 
-// using the ability to split links, you can send data to each link
-// depending on what kind of operation is being sent
+// Using the ability to split links, you can send data to each link
+// Depending on what kind of operation is being sent
 const link = split(
-  // split based on operation type
+  // Split based on operation type
   ({ query }) => {
     const { kind, operation } = getMainDefinition(query) as OperationDefinitionNode;
     return kind === 'OperationDefinition' && operation === 'subscription';
@@ -70,6 +71,8 @@ client.subscribe({
 }).subscribe(thing => console.log(thing));
 
 ReactDOM.render(
-    <App />,
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
     document.getElementById('mount')
 );

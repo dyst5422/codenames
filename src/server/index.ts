@@ -16,7 +16,6 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { assertOne } from '../utils/assertions';
 import { nouns } from './nouns';
 import { createResolvers } from './resolvers';
-import { userInfo } from 'os';
 
 async function main() {
   const mongoClient = await MongoClient.connect('mongodb://localhost:27017');

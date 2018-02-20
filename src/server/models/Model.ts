@@ -13,7 +13,7 @@ export class Model<Props extends object> {
   public id: string;
   public props: Props;
 
-  public async syncProperties() {
+  public async syncPropsFromDb() {
     const dbRecord = await (this._collection.findOne({ _id: new ObjectId(this.id) }) as Promise<{
       _id: ObjectId;
       props: Props;
